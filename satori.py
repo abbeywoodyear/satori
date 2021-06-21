@@ -21,6 +21,7 @@ import satoriHTTP
 #import satoriICMP
 import satoriSMB
 #import smb
+import logging
 
 def usage():
     print("""
@@ -76,6 +77,9 @@ def main():
   #without this when parsing http for example we get "WARNINGS" when packets aren't quite right in the header.
   logger = pypacker.logging.getLogger("pypacker")
   pypacker.logger.setLevel(pypacker.logging.ERROR)
+
+  if not log:
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
 
   counter = 0
   startTime = time.time()
@@ -170,7 +174,7 @@ def main():
     try:
       preader = ppcap.Reader(filename=readpcap)
     except:
-      print('File was not pcap format', end='\n', flush=True)
+      logging.error('File was not pcap format')
       sys.exit(1)
     for ts, buf in preader:
       try:
@@ -219,7 +223,7 @@ def main():
       #assuming only doing -m http
       #preader.setfilter('tcp port 80 or tcp port 8080')
     except Exception as e:
-      print(e, end='\n', flush=True)
+      logging.exception(e)
       sys.exit(1)
     while True:
       try:
@@ -262,13 +266,13 @@ def main():
 
 
   else:  #we should never get here with "proceed" check, but just in case
-    print("Not sure how we got here", end='\n', flush=True)
+    logging.info("Not sure how we got here", end='\n', flush=True)
 
   endTime = time.time()
   totalTime = endTime - startTime
 
   if verbose:
-    print ('Total Time: %s, Total Packets: %s, Packets/s: %s' % (totalTime, counter, counter / totalTime ))
+    logging.info('Total Time: %s, Total Packets: %s, Packets/s: %s' % (totalTime, counter, counter / totalTime ))
 
 try:
   opts, args = getopt.getopt(sys.argv[1:], "r:m:i:l:v:d:", [ 'read=', 'modules=', 'interface=', 'log=', 'verbose', 'directory='])
@@ -281,7 +285,8 @@ try:
   for opt, val in opts:
     if opt in ('-r', '--read'):
       if not os.path.isfile(val):
-        print ('\nFile "%s" does not appear to exist, please verify pcap file name.' % val)
+        logging.basicConfig(level=logging.INFO, format='%(message)s')
+        logging.info('\nFile "%s" does not appear to exist, please verify pcap file name.' % val)
         sys.exit()
       else:
         proceed = True
@@ -291,14 +296,16 @@ try:
     if opt in ('-i', '--interface'):
       interface = val
       proceed = True
-    if opt in ('-l', '--log'):  #not implemented yet
+    if opt in ('-l', '--log'):  #auto-appends logging information if file exists
       log = val
-      # do a check to see if file already exists, if so open in append mode, else create
+      logging.basicConfig(filename=val, format='%(message)s', level=logging.INFO)
+      logging.info(f"\n{datetime.now()}")
     if opt in ('-v', '--verbose'):
       verbose = True
     if opt in ('-d', '--directory'):
       if not os.path.isdir(val):
-        print ('\nDir "%s" does not appear to exist, please verify directory name.' % val)
+        logging.basicConfig(level=logging.INFO, format='%(message)s')
+        logging.error('\nDir "%s" does not appear to exist, please verify directory name.' % val)
         sys.exit()
       else:
         proceed = True
@@ -307,7 +314,7 @@ try:
   if (__name__ == '__main__') and proceed:
     main()
   else:
-    print('Need to provide a pcap to read in or an interface to watch', end='\n', flush=True)
+    logging.error('\nNeed to provide a pcap to read in or an interface to watch')
     usage()
 
 except getopt.error:
