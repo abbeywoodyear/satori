@@ -37,7 +37,7 @@ def tcpProcess(pkt, layer, ts, sExactList, saExactList, sPartialList, saPartialL
 
     [ipVersion, ipHdrLen] = computeIP(ip4.v_hl)
     [ethTTL, ttl] = computeNearTTL(ip4.ttl)
-    [df, mf, offset] = computeIPOffset(ip4.off)
+    [df, mf, offset] = computeIPOffset(ip4.frag_off)
 
     winSize = tcp1.win
     tcpFlags = computeTCPFlags(tcp1.flags)
