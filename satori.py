@@ -275,7 +275,7 @@ def main():
     logging.info('Total Time: %s, Total Packets: %s, Packets/s: %s' % (totalTime, counter, counter / totalTime ))
 
 try:
-  opts, args = getopt.getopt(sys.argv[1:], "r:m:i:l:v:d:", [ 'read=', 'modules=', 'interface=', 'log=', 'verbose', 'directory='])
+  opts, args = getopt.getopt(sys.argv[1:], "r:m:i:l:vd:", [ 'read=', 'modules=', 'interface=', 'log=', 'verbose', 'directory='])
 
   readpcap = interface = modules = log = directory = ''
   proceed = False
