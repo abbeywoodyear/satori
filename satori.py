@@ -23,6 +23,7 @@ import satoriSMB
 #import smb
 import logging
 import logging.config
+# import auxiliary_module
 
 def usage():
     print("""
@@ -90,6 +91,9 @@ def main():
   console_formatter = logging.Formatter('%(message)s')
   console_handler.setFormatter(console_formatter)
   logger.addHandler(console_handler)
+
+  # creates auxiliary logger for use in other modules
+  # a = auxiliary_module.Auxiliary()
 
   counter = 0
   startTime = time.time()
