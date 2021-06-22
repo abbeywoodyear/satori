@@ -4,6 +4,10 @@ from pathlib import Path
 from datetime import datetime
 from pypacker.layer12 import ethernet
 from pypacker.layer3 import ip
+import logging
+
+# logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+logger = logging.getLogger('__main__.' + __name__)
 
 # grab the latest fingerprint files:
 # wget chatteronthewire.org/download/updates/satori/fingerprints/tcp.xml -O tcp.xml
@@ -51,12 +55,14 @@ def httpServerProcess(pkt, layer, ts, serverExactList, serverPartialList):
     #not ideal but converting any ; to | for parsing reasons!
 #    changedUserAgent = hdrUserAgent.replace(';', '|')
 
-    print("%s;%s;%s;HTTPSERVER;%s;%s" % (timeStamp, ip4.src_s, src_mac, hdrServer, httpServerFingerprint), end='\n', flush=True)
+    logger.info("%s;%s;%s;HTTPSERVER;%s;%s" % (timeStamp, ip4.src_s,
+                src_mac, hdrServer, httpServerFingerprint))
   if (bodyServer != ''):
     httpServerFingerprint = httpServerFingerprintLookup(serverExactList, serverPartialList, bodyServer)
     #not ideal but converting any ; to | for parsing reasons!
 #    changedUserAgent = bodyUserAgent.replace(';', '|')
-    print("%s;%s;%s;HTTPSERVER;%s;%s" % (timeStamp, ip4.src_s, src_mac, bodyServer, httpServerFingerprint), end='\n', flush=True)
+    logger.info("%s;%s;%s;HTTPSERVER;%s;%s" % (timeStamp, ip4.src_s,
+                src_mac, bodyServer, httpServerFingerprint))
 
 
 
@@ -95,12 +101,14 @@ def httpUserAgentProcess(pkt, layer, ts, useragentExactList, useragentPartialLis
     httpUserAgentFingerprint = httpUserAgentFingerprintLookup(useragentExactList, useragentPartialList, hdrUserAgent)
     #not ideal but converting any ; to | for parsing reasons!
     changedUserAgent = hdrUserAgent.replace(';', '|')
-    print("%s;%s;%s;USERAGENT;%s;%s" % (timeStamp, ip4.src_s, src_mac, changedUserAgent, httpUserAgentFingerprint), end='\n', flush=True)
+    logger.info("%s;%s;%s;USERAGENT;%s;%s" % (timeStamp, ip4.src_s, src_mac,
+                changedUserAgent, httpUserAgentFingerprint))
   if (bodyUserAgent != ''):
     httpUserAgentFingerprint = httpUserAgentFingerprintLookup(useragentExactList, useragentPartialList, bodyUserAgent)
     #not ideal but converting any ; to | for parsing reasons!
     changedUserAgent = bodyUserAgent.replace(';', '|')
-    print("%s;%s;%s;USERAGENT;%s;%s" % (timeStamp, ip4.src_s, src_mac, changedUserAgent, httpUserAgentFingerprint), end='\n', flush=True)
+    logger.info("%s;%s;%s;USERAGENT;%s;%s" % (timeStamp, ip4.src_s, src_mac,
+                changedUserAgent, httpUserAgentFingerprint))
 
 
 def BuildHTTPServerFingerprintFiles():

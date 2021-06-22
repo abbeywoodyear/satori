@@ -6,6 +6,8 @@ from pypacker.layer3 import ip
 from datetime import datetime
 import logging
 
+# logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+logger = logging.getLogger('__main__.' + __name__)
 
 # grab the latest fingerprint files:
 # wget chatteronthewire.org/download/updates/satori/fingerprints/tcp.xml -O tcp.xml
@@ -16,7 +18,7 @@ import logging
 # cat output.txt | awk -F';'  '{print $5";"$6";"$7}' | sort -u > output2.txt
 
 def tcpProcess(pkt, layer, ts, sExactList, saExactList, sPartialList, saPartialList):  #instead of pushing the fingerprint files in each time would it make sense to make them globals?  Does it matter?
-  logger = logging.getLogger('__main__.' + __name__)  # logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+  # logger = logging.getLogger('__main__.' + __name__)  # logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
   
   if layer == 'eth':
     src_mac = pkt[ethernet.Ethernet].src_s

@@ -25,6 +25,10 @@ import logging
 import logging.config
 # import auxiliary_module
 
+# logger initialised first
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 def usage():
     print("""
     -d, --directory   directory to read all pcaps in one at a time; example -d /pcaps
@@ -296,8 +300,6 @@ try:
 
   #need to eventually do a check to make sure both readpcap and interface are not both set!
   for opt, val in opts:
-    logger = logging.getLogger(__name__) # to allow for error logs from command args
-    logger.setLevel(logging.INFO)
     if opt in ('-r', '--read'):
       if not os.path.isfile(val):
         logger.error('\nFile "%s" does not appear to exist, please verify pcap file name.' % val)
