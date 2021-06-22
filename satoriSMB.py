@@ -6,6 +6,10 @@ from pypacker.layer12 import ethernet
 from pypacker.layer3 import ip
 #from pypacker.layer567 import smb
 import smbHeader
+import logging
+
+# logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+logger = logging.getLogger('__main__.' + __name__)
 
 # grab the latest fingerprint files:
 # wget chatteronthewire.org/download/updates/satori/fingerprints/tcp.xml -O tcp.xml
@@ -24,8 +28,8 @@ import smbHeader
 def networkByteOrder(data):  #use struct to handle this instead!
   list = []
   val = hex(data).strip("0x")
-  print(data)
-  print(val)
+  logger.info(data)
+  logger.info(val)
   for i in range(0, len(val), 2):
     list.insert(0,val[i:i+2])
   return(list)
@@ -79,7 +83,7 @@ def smbUDPProcess(pkt, layer, ts, browserExactList, browserPartialList):
       if (osVersion != '') and (browVersion != ''):
         fingerprint = osVersion + ';' + browVersion
         osGuess = SMBUDPFingerprintLookup(browserExactList, browserPartialList, fingerprint)
-        print("%s;%s;%s;SMBBROWSER;%s;%s" % (timeStamp, ip4.src_s, src_mac, fingerprint, osGuess), end='\n', flush=True)
+        logger.info("%s;%s;%s;SMBBROWSER;%s;%s" % (timeStamp, ip4.src_s, src_mac, fingerprint, osGuess))
 
 
 def smbTCPProcess(pkt, layer, ts, nativeExactList, lanmanExactList, nativePartialList, lanmanPartialList):
@@ -184,10 +188,10 @@ def smbTCPProcess(pkt, layer, ts, nativeExactList, lanmanExactList, nativePartia
 
         if nativeOS != '':
           osGuess = SMBTCPFingerprintLookup(nativeExactList, nativePartialList, nativeOS)
-          print("%s;%s;%s;SMBNATIVE;NativeOS;%s;%s" % (timeStamp, ip4.src_s, src_mac, nativeOS, osGuess), end='\n', flush=True)
+          logger.info("%s;%s;%s;SMBNATIVE;NativeOS;%s;%s" % (timeStamp, ip4.src_s, src_mac, nativeOS, osGuess))
         if nativeLanMan != '':
           osGuess = SMBTCPFingerprintLookup(lanmanExactList, lanmanPartialList, nativeLanMan)
-          print("%s;%s;%s;SMBNATIVE;NativeLanMan;%s;%s" % (timeStamp, ip4.src_s, src_mac, nativeLanMan, osGuess), end='\n', flush=True)
+          logger.info("%s;%s;%s;SMBNATIVE;NativeLanMan;%s;%s" % (timeStamp, ip4.src_s, src_mac, nativeLanMan, osGuess))
 
 
 def BuildSMBUDPFingerprintFiles():

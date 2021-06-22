@@ -4,7 +4,10 @@ from pathlib import Path
 from pypacker.layer12 import ethernet
 from pypacker.layer3 import ip
 from datetime import datetime
+import logging
 
+# logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+logger = logging.getLogger('__main__.' + __name__)
 
 # grab the latest fingerprint files:
 # wget chatteronthewire.org/download/updates/satori/fingerprints/tcp.xml -O tcp.xml
@@ -13,10 +16,10 @@ from datetime import datetime
 # python3 satori.py > output.txt
 # cat output.txt | awk -F';' '{print $3, $4, $5, $6, $7}' | sort -u > output2.txt
 # cat output.txt | awk -F';'  '{print $5";"$6";"$7}' | sort -u > output2.txt
-#
-
 
 def tcpProcess(pkt, layer, ts, sExactList, saExactList, sPartialList, saPartialList):  #instead of pushing the fingerprint files in each time would it make sense to make them globals?  Does it matter?
+  # logger = logging.getLogger('__main__.' + __name__)  # logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+  
   if layer == 'eth':
     src_mac = pkt[ethernet.Ethernet].src_s
   else:
@@ -93,7 +96,7 @@ def tcpProcess(pkt, layer, ts, sExactList, saExactList, sPartialList, saPartialL
     #ignore anything that is not S or SA, but should probably clean that up prior to this point!
     timeStamp = datetime.utcfromtimestamp(ts).isoformat()
 
-    print("%s;%s;%s;TCP;%s;%s;%s" % (timeStamp, ip4.src_s, src_mac, tcpFlags, tcpSignature, tcpFingerprint), end='\n', flush=True)
+    logger.info("%s;%s;%s;TCP;%s;%s;%s" % (timeStamp, ip4.src_s, src_mac, tcpFlags, tcpSignature, tcpFingerprint))
     #print("%s;%s;00:00;00:00:00:00;p0fv2;%s;%s;%s" % (timeStamp, eth[ip.IP].src_s, eth[ethernet.Ethernet].src_s, tcpFlags, p0fSignature, p0fv2Fingerprint))
     #print("%s;%s;00:00;00:00:00:00;Ettercap;%s;%s;%s" % (timeStamp, eth[ip.IP].src_s, eth[ethernet.Ethernet].src_s, tcpFlags, ettercapSignature, ettercapFingerprint))
 

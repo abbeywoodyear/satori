@@ -6,7 +6,10 @@ from pypacker.layer3 import ip
 from pypacker.layer567 import dhcp
 from datetime import datetime
 from pypacker import pypacker
+import logging
 
+# logger inherited from satori.py, must have '__main__.' +, as on same level as satori.py
+logger = logging.getLogger('__main__.' + __name__)
 
 # grab the latest fingerprint files:
 # wget chatteronthewire.org/download/updates/satori/fingerprints/dhcp.xml -O dhcp.xml
@@ -45,92 +48,114 @@ def dhcpProcess(pkt, layer, ts, DiscoverOptionsExactList, DiscoverOptionsPartial
   if messageType == 'Discover':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(DiscoverOptionsExactList, DiscoverOptionsPartialList, options)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(DiscoverOption55ExactList, DiscoverOption55PartialList, option55)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(DiscoverVendorCodeExactList, DiscoverVendorCodePartialList, vendorCode)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'Offer':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(OfferOptionsExactList, OfferOptionsPartialList, options)
 #      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(OfferOption55ExactList, OfferOption55PartialList, option55)
 #      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(OfferVendorCodeExactList, OfferVendorCodePartialList, vendorCode)
 #      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'Request':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(RequestOptionsExactList, RequestOptionsPartialList, options)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(RequestOption55ExactList, RequestOption55PartialList, option55)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(RequestVendorCodeExactList, RequestVendorCodePartialList, vendorCode)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'Decline':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(DeclineOptionsExactList, DeclineOptionsPartialList, options)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(DeclineOption55ExactList, DeclineOption55PartialList, option55)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(DeclineVendorCodeExactList, DeclineVendorCodePartialList, vendorCode)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'ACK':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(ACKOptionsExactList, ACKOptionsPartialList, options)
 #      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions))
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(ACKOption55ExactList, ACKOption55PartialList, option55)
 #      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, ip4.src_s, src_mac, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, ip4.src_s, src_mac,
+                  clientMAC, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(ACKVendorCodeExactList, ACKVendorCodePartialList, vendorCode)
 #      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'NAK':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(NAKOptionsExactList, NAKOptionsPartialList, options)
 #      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(NAKOption55ExactList, NAKOption55PartialList, option55)
 #      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(NAKVendorCodeExactList, NAKVendorCodePartialList, vendorCode)
 #      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, ip4.src_s, src_mac, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, ip4.src_s,
+                  src_mac, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'Release':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(ReleaseOptionsExactList, ReleaseOptionsPartialList, options)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(ReleaseOption55ExactList, ReleaseOption55PartialList, option55)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(ReleaseVendorCodeExactList, ReleaseVendorCodePartialList, vendorCode)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, vendorCode, osGuessVendorCode))
   elif messageType == 'Inform':
     if options != '':
       osGuessOptions = DHCPFingerprintLookup(InformOptionsExactList, InformOptionsPartialList, options)
-      print("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, options, osGuessOptions), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Options;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, options, osGuessOptions))
     if option55 != '':
       osGuessOption55 = DHCPFingerprintLookup(InformOption55ExactList, InformOption55PartialList, option55)
-      print("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, option55, osGuessOption55), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;Option55;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, option55, osGuessOption55))
     if vendorCode != '':
       osGuessVendorCode = DHCPFingerprintLookup(InformVendorCodeExactList, InformVendorCodePartialList, vendorCode)
-      print("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr, clientMAC, messageType, vendorCode, osGuessVendorCode), end='\n', flush=True)
+      logger.info("%s;%s;%s;DHCP;%s;VendorCode;%s;%s" % (timeStamp, clientAddr,
+                  clientMAC, messageType, vendorCode, osGuessVendorCode))
 # need to revisit this when not printing them as this just makes noise right now.
 #  if messageType != None:  #last ditch check against the 'any' field ones
 #    if options != '':
