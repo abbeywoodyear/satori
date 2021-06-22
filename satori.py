@@ -22,6 +22,7 @@ import satoriHTTP
 import satoriSMB
 #import smb
 import logging
+import logging.config
 
 def usage():
     print("""
@@ -75,11 +76,20 @@ def packetType(buf):
 def main():
   #override some warning settings in pypacker.  May need to change this to .CRITICAL in the future, but for now we're trying .ERROR
   #without this when parsing http for example we get "WARNINGS" when packets aren't quite right in the header.
-  logger = pypacker.logging.getLogger("pypacker")
-  pypacker.logger.setLevel(pypacker.logging.ERROR)
+  pyplogger = pypacker.logging.getLogger("pypacker")
+  pyplogger.setLevel(pypacker.logging.ERROR)
 
+  # initialises logger, will output only ERROR logs and above if log command argument not set
+  console_handler = logging.StreamHandler()
+  console_handler.setLevel(logging.INFO)
   if not log:
-    logging.basicConfig(level=logging.INFO, format='%(message)s')
+    console_handler.setLevel(logging.INFO)
+  else:
+    logger.info(f"\n{datetime.now()}")
+    console_handler.setLevel(logging.ERROR)
+  console_formatter = logging.Formatter('%(message)s')
+  console_handler.setFormatter(console_formatter)
+  logger.addHandler(console_handler)
 
   counter = 0
   startTime = time.time()
@@ -174,7 +184,7 @@ def main():
     try:
       preader = ppcap.Reader(filename=readpcap)
     except:
-      logging.error('File was not pcap format')
+      logger.error('File was not pcap format')
       sys.exit(1)
     for ts, buf in preader:
       try:
@@ -223,7 +233,7 @@ def main():
       #assuming only doing -m http
       #preader.setfilter('tcp port 80 or tcp port 8080')
     except Exception as e:
-      logging.exception(e)
+      logger.exception(e)
       sys.exit(1)
     while True:
       try:
@@ -266,13 +276,13 @@ def main():
 
 
   else:  #we should never get here with "proceed" check, but just in case
-    logging.info("Not sure how we got here", end='\n', flush=True)
+    logger.info("Not sure how we got here", end='\n', flush=True)
 
   endTime = time.time()
   totalTime = endTime - startTime
 
   if verbose:
-    logging.info('Total Time: %s, Total Packets: %s, Packets/s: %s' % (totalTime, counter, counter / totalTime ))
+    logger.info('Total Time: %s, Total Packets: %s, Packets/s: %s' % (totalTime, counter, counter / totalTime ))
 
 try:
   opts, args = getopt.getopt(sys.argv[1:], "r:m:i:l:vd:", [ 'read=', 'modules=', 'interface=', 'log=', 'verbose', 'directory='])
@@ -283,10 +293,11 @@ try:
 
   #need to eventually do a check to make sure both readpcap and interface are not both set!
   for opt, val in opts:
+    logger = logging.getLogger(__name__) # to allow for error logs from command args
+    logger.setLevel(logging.INFO)
     if opt in ('-r', '--read'):
       if not os.path.isfile(val):
-        logging.basicConfig(level=logging.INFO, format='%(message)s')
-        logging.info('\nFile "%s" does not appear to exist, please verify pcap file name.' % val)
+        logger.error('\nFile "%s" does not appear to exist, please verify pcap file name.' % val)
         sys.exit()
       else:
         proceed = True
@@ -298,14 +309,16 @@ try:
       proceed = True
     if opt in ('-l', '--log'):  #auto-appends logging information if file exists
       log = val
-      logging.basicConfig(filename=val, format='%(message)s', level=logging.INFO)
-      logging.info(f"\n{datetime.now()}")
+      file_handler = logging.FileHandler(val)
+      file_handler.setLevel(logging.INFO)
+      file_formatter = logging.Formatter('%(message)s')
+      file_handler.setFormatter(file_formatter)
+      logger.addHandler(file_handler)
     if opt in ('-v', '--verbose'):
       verbose = True
     if opt in ('-d', '--directory'):
       if not os.path.isdir(val):
-        logging.basicConfig(level=logging.INFO, format='%(message)s')
-        logging.error('\nDir "%s" does not appear to exist, please verify directory name.' % val)
+        logger.error('\nDir "%s" does not appear to exist, please verify directory name.' % val)
         sys.exit()
       else:
         proceed = True
@@ -314,7 +327,7 @@ try:
   if (__name__ == '__main__') and proceed:
     main()
   else:
-    logging.error('\nNeed to provide a pcap to read in or an interface to watch')
+    # logger.error('\nNeed to provide a pcap to read in or an interface to watch')
     usage()
 
 except getopt.error:
