@@ -73,13 +73,7 @@ def packetType(buf):
 
   return(pkt, layer, tcpPacket, dhcpPacket, httpPacket, udpPacket)
 
-
-def main():
-  #override some warning settings in pypacker.  May need to change this to .CRITICAL in the future, but for now we're trying .ERROR
-  #without this when parsing http for example we get "WARNINGS" when packets aren't quite right in the header.
-  pyplogger = pypacker.logging.getLogger("pypacker")
-  pyplogger.setLevel(pypacker.logging.ERROR)
-
+def initialise_logger():
   # initialises logger, will output only ERROR logs and above if log command argument not set
   console_handler = logging.StreamHandler()
   console_handler.setLevel(logging.INFO)
@@ -92,8 +86,13 @@ def main():
   console_handler.setFormatter(console_formatter)
   logger.addHandler(console_handler)
 
-  # creates auxiliary logger for use in other modules
-  # a = auxiliary_module.Auxiliary()
+def main():
+  #override some warning settings in pypacker.  May need to change this to .CRITICAL in the future, but for now we're trying .ERROR
+  #without this when parsing http for example we get "WARNINGS" when packets aren't quite right in the header.
+  pyplogger = pypacker.logging.getLogger("pypacker")
+  pyplogger.setLevel(pypacker.logging.ERROR)
+
+  initialise_logger()
 
   counter = 0
   startTime = time.time()
