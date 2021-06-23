@@ -338,7 +338,7 @@ try:
   if (__name__ == '__main__') and proceed:
     main()
   else:
-    # logger.error('\nNeed to provide a pcap to read in or an interface to watch')
+    logger.error('\nNeed to provide a pcap to read in or an interface to watch')
     usage()
 
 except getopt.error:
